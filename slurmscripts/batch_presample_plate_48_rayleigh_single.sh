@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# BATCH_PRESAMPLE_PLATE_48_HYSTERETIC
-# Queues presample scripts of the benchmark 'plate_48_hysteretic' using all applicable methods.
+# BATCH_PRESAMPLE_PLATE_48_RAYLEIGH_SINGLE
+# Queues presample scripts of the benchmark 'plate_48_rayleigh_single' using all applicable methods.
 
 #
 # This file is part of the Code, Data and Results for Numerical Experiments
@@ -14,34 +14,53 @@
 
 email="aumann@mpi-magdeburg.mpg.de"
 
-bench='plate_48_hysteretic'
+bench='plate_48_rayleigh_single'
 wmin=1*2*pi
 wmax=250*2*pi
 ns=250
 ns_aaaa=25
 ns_strprs=84
 r=10
-w_pre_strprs="2*pi*[46:48]"
+w_pre_strprs="2*pi*[46 47 48 50]"
 w_pre_aaaa="2*pi*[46 47 48 50]"
-side='input'
+side='ts'
 
-sbatch -J pre_ph \
+sbatch -J pre_prs \
     --mail-user=${email} \
     --partition=short \
-    --time=0-1:00:00 \
+    --time=0-2:00:00 \
     --export=ALL,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns,wpre=[],side=$side \
     presample.sh
 
-sbatch -J pre_ph_strprs \
+sbatch -J pre_prs_strprs \
     --mail-user=${email} \
     --partition=short \
-    --time=0-1:00:00 \
+    --time=0-2:00:00 \
     --export=ALL,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns_strprs,wpre="$w_pre_strprs",side=$side \
     presample_structure_preserving.sh
 
-sbatch -J pre_ph_aaa \
+sbatch -J pre_prs_aaa \
     --mail-user=${email} \
     --partition=short \
-    --time=0-1:00:00 \
+    --time=0-2:00:00 \
     --export=ALL,bench=$bench,r=$r,wmin=$wmin,wmax=$wmax,ns=$ns_aaaa,wpre="$w_pre_aaaa",side=$side \
     presample_aaa_arnoldi.sh
+
+method='sobt'
+bt='osinput'
+
+sbatch -J pre_prs_${method}_${bt} \
+    --mail-user=${email} \
+    --partition=long \
+    --time=3-0:00:00 \
+    --export=ALL,method=$method,bench=$bench,wmin=0,wmax=0,ns=0,rs=1,pm=$bt,wpre=[] \
+    compute.sh
+
+bt='osoutput'
+
+sbatch -J pre_prs_${method}_${bt} \
+    --mail-user=${email} \
+    --partition=long \
+    --time=3-0:00:00 \
+    --export=ALL,method=$method,bench=$bench,wmin=0,wmax=0,ns=0,rs=1,pm=$bt,wpre=[] \
+    compute.sh
