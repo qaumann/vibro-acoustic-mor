@@ -1,2 +1,5 @@
 *.mat
 *.asv
+
+log/*.err
+log/*.out

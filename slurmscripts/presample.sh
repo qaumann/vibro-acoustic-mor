@@ -15,7 +15,7 @@ echo "presample(load_model('$bench', true), $wmin, $wmax, $ns, 1, $ns, $wpre, '$
 echo
 
 # Run MATLAB
-matlab -nodisplay -r "install;\
+matlab -nojvm -nosplash -batch "install;\
 sys=load_model('$bench', true);\
 presample(sys, $wmin, $wmax, $ns, 1, $ns, $wpre, '$side'); \
 quit();"  < /dev/null

@@ -27,37 +27,21 @@ side='input'
 
 sbatch -J pre_ph \
     --mail-user=${email} \
-    --time=3-00:00:00 \
-    --export=ALL,\
-    bench=$bench,\
-    wmin=$wmin,\
-    wmax=$wmax,\
-    ns=$ns,\
-    wpre=[],\
-    side=$side \
+    --partition=medium \
+    --time=0-6:00:00 \
+    --export=ALL,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns,wpre=[],side=$side \
     presample.sh
 
 sbatch -J pre_ph_strprs \
     --mail-user=${email} \
-    --time=3-00:00:00 \
-    --export=ALL,\
-    bench=$bench,\
-    wmin=$wmin,\
-    wmax=$wmax,\
-    ns=$ns_strprs,\
-    wpre="$w_pre_strprs",\
-    side=$side \
+    --partition=medium \
+    --time=0-6:00:00 \
+    --export=ALL,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns_strprs,wpre="$w_pre_strprs",side=$side \
     presample_structure_preserving.sh
 
 sbatch -J pre_ph_aaa \
     --mail-user=${email} \
-    --time=3-00:00:00 \
-    --export=ALL,\
-    bench=$bench,\
-    r=$r,\
-    wmin=$wmin,\
-    wmax=$wmax,\
-    ns=$ns_aaaa,\
-    wpre="$w_pre_aaaa",\
-    side=$side \
+    --partition=medium \
+    --time=0-6:00:00 \
+    --export=ALL,bench=$bench,r=$r,wmin=$wmin,wmax=$wmax,ns=$ns_aaaa,wpre="$w_pre_aaaa",side=$side \
     presample_aaa_arnoldi.sh
