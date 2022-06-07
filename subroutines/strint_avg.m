@@ -1,4 +1,4 @@
-function [Ar, br, cr] = strint_avg(sys, V, W, r, method)
+function [Ar, br, cr, ctime] = strint_avg(sys, V, W, r, method)
 %STRINT_AVG Compute structured interpolation with approximate subspaces.
 %
 % SYNTAX:
@@ -20,6 +20,7 @@ function [Ar, br, cr] = strint_avg(sys, V, W, r, method)
 %
 % OUTPUT:
 %   Ar, br, cr - reduced order model
+%   ctime - struct with computation times
 
 %
 % This file is part of the Code, Data and Results for Numerical Experiments
@@ -43,7 +44,10 @@ else
     nc = 0;
 end
 
+ctime = struct();
+
 % Compute final reduction basis
+time_qr = tic;
 if strcmpi(method, 'tsimag') ...
         || strcmpi(method, 'tsreal') ...
         || strcmpi(method, 'osimaginput') ...
@@ -67,8 +71,10 @@ if strcmpi(method, 'tsimag') ...
         V = W;
     end
 end
+ctime.qr = toc(time_qr);
 
 % Compute reduced-order model.
+time_projection = tic;
 Ar = cellfun(@(c) W' * (c * V), sys.A, 'UniformOutput', 0);
 
 if nb > 1
@@ -81,4 +87,7 @@ if nc > 1
     cr = cellfun(@(c) c * V, sys.c, 'UniformOutput', 0);
 else
     cr = sys.c * V;
+end
+ctime.projection = toc(time_projection);
+
 end

@@ -1,4 +1,4 @@
-function [Ar, br, cr, w] = strint_equi(sys, wmin, wmax, w_pre, ns, method)
+function [Ar, br, cr, w, ctime] = strint_equi(sys, wmin, wmax, w_pre, ns, method)
 %STRINT_EQUI Compute structured interpolation with equidistant points.
 %
 % SYNTAX:
@@ -22,6 +22,7 @@ function [Ar, br, cr, w] = strint_equi(sys, wmin, wmax, w_pre, ns, method)
 % OUTPUT:
 %   Ar, br, cr - reduced order model
 %   w - expansion frequencies
+%   ctime - struct with computation times
 
 %
 % This file is part of the Code, Data and Results for Numerical Experiments
@@ -58,6 +59,8 @@ else
     nc = 0;
 end
 
+ctime = struct();
+
 % Interpolation bases sizes.
 switch lower(method)
     case 'tsimag'
@@ -87,6 +90,10 @@ end
 % Compute bases
 for k = 1:ns
     fprintf(1, 'Step %3d / %3d\n', k, ns);
+    time_basis = tic;
+    time_assemble = 0;
+    timer_assemble = tic;
+    time_solve = 0;
     
     s = w(k);
     
@@ -96,11 +103,14 @@ for k = 1:ns
         Atmp = Atmp + sys.fA{j}(s) * sys.A{j};
     end
     
+    time_assemble = time_assemble + toc(timer_assemble);
+    
     % Accumulate inputs.
     if strcmpi(method, 'tsimag') ...
             || strcmpi(method, 'tsreal') ...
             || strcmpi(method, 'osimaginput') ...
             || strcmpi(method, 'osrealinput')
+        timer_assemble = tic;
         if nb == 0
             btmp = sys.b;
         elseif nb == 1
@@ -111,8 +121,11 @@ for k = 1:ns
                 btmp = btmp + sys.fb{j}(s) * sys.b{j};
             end
         end
+        time_assemble = time_assemble + toc(timer_assemble);
         
+        timer_solve = tic;
         x = full(Atmp \ btmp);
+        time_solve = time_solve + toc(timer_solve);
         
         if strcmpi(method, 'tsimag') || strcmpi(method, 'osimaginput')
             V(:, k) = x;
@@ -126,6 +139,7 @@ for k = 1:ns
             || strcmpi(method, 'tsreal') ...
             || strcmpi(method, 'osimagoutput') ...
             || strcmpi(method, 'osrealoutput')
+        timer_assemble = tic;
         if nc == 0
             ctmp = sys.c;
         elseif nc == 1
@@ -136,8 +150,11 @@ for k = 1:ns
                 ctmp = ctmp + sys.fc{j}(s) * sys.c{j};
             end
         end
+        time_assemble = time_assemble + toc(timer_assemble);
         
+        timer_solve = tic;
         y = full(Atmp' \ ctmp');
+        time_solve = time_solve + toc(timer_solve);
         
         if strcmpi(method, 'tsimag' ) || strcmpi(method, 'osimagoutput')
             W(:, k) = y;
@@ -145,8 +162,13 @@ for k = 1:ns
             W(:, 2*k-1:2*k) = [real(y), imag(y)];
         end
     end
+    
+    ctime.time_assemble(k) = time_assemble;
+    ctime.time_solve(k) = time_solve;
+    ctime.time_basis(k) = toc(time_basis);
 end
 
+time_qr = tic;
 if strcmpi(method, 'tsimag') ...
         || strcmpi(method, 'tsreal') ...
         || strcmpi(method, 'osimaginput') ...
@@ -168,8 +190,10 @@ if strcmpi(method, 'tsimag') ...
         V = W;
     end
 end
+ctime.qr = toc(time_qr);
 
 % Compute reduced-order model.
+time_projection = tic;
 Ar = cellfun(@(c) W' * (c * V), sys.A, 'UniformOutput', 0);
 
 if nb > 1
@@ -182,4 +206,7 @@ if nc > 1
     cr = cellfun(@(c) c * V, sys.c, 'UniformOutput', 0);
 else
     cr = sys.c * V;
+end
+ctime.projection = toc(time_projection);
+
 end

@@ -1,8 +1,8 @@
-function [Ar, br, cr, w] = strint_linf(sys, w, V, W, tf, r, method)
+function [Ar, br, cr, w, ctime] = strint_linf(sys, w, V, W, tf, r, method)
 %STRINT_LINF Compute structured interpolation with L-infinity points.
 %
 % SYNTAX:
-%   [Ar, br, cr, w] = STRINT_LINF(sys, w, V, W, tf, r, method)
+%   [Ar, br, cr, w, ctime] = STRINT_LINF(sys, w, V, W, tf, r, method)
 %
 % DESCRIPTION: Requires presampled data (see presample.m)
 %
@@ -23,6 +23,7 @@ function [Ar, br, cr, w] = strint_linf(sys, w, V, W, tf, r, method)
 % OUTPUT:
 %   Ar, br, cr - reduced order model
 %   w - expansion frequencies
+%   ctime - struct with computation times
 
 %
 % This file is part of the Code, Data and Results for Numerical Experiments
@@ -54,6 +55,8 @@ if startsWith(sys.name, 'plate_48')
     n_nodes = full(sum(sum(sys.c)));
 end
 
+ctime = struct();
+
 % Compute final bases.
 k            = 1;
 idx          = zeros(1, r);
@@ -61,6 +64,7 @@ Vtmp         = zeros(n, 0);
 Wtmp         = zeros(n, 0);
 [Ar, br, cr] = compute_rom(sys, nb, nc, Vtmp, Wtmp);
 while k <= ceil(r/rs)
+    time_errsys = tic;
     errsys = zeros(1, ns);
     for j = 1:ns
         if ismember(j, idx)
@@ -105,6 +109,7 @@ while k <= ceil(r/rs)
             end
         end
     end
+    ctime.errsys(k) = toc(time_errsys);
     
     [~, tmp] = max(errsys);
     idx(k)   = tmp;
@@ -118,6 +123,7 @@ while k <= ceil(r/rs)
     select = new_select;
     
     % Compute next ROM.
+    time_qr = tic;
     if strcmpi(method, 'tsimag') || strcmpi(method, 'osimaginput')
         [Vtmp, ~, ~] = qr(V(:, select), 0);
     elseif strcmpi(method, 'tsreal') || strcmpi(method, 'osrealinput')
@@ -135,8 +141,11 @@ while k <= ceil(r/rs)
     if strcmpi(method, 'osimagoutput') || strcmpi(method, 'osrealoutput')
         Vtmp = Wtmp;
     end
+    ctime.qr(k) = toc(time_qr);
     
+    time_projection = tic;
     [Ar, br, cr] = compute_rom(sys, nb, nc, Vtmp, Wtmp);
+    ctime.projection(k) = toc(time_projection);
     
     if strcmpi(method, 'tsreal') ...
             || strcmpi(method, 'osrealinput') ...

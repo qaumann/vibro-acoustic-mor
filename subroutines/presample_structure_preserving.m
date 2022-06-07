@@ -80,7 +80,7 @@ time_all_bases = tic;
 for k = nsmin:nsmax
     fprintf(1, 'Presampling step %3d / %3d ... ', k, nsmax);
     time_basis = tic;
-    time_assembly = tic;
+    time_assemble = tic;
     
     s = w(k);
     
@@ -100,7 +100,7 @@ for k = nsmin:nsmax
         
     end
     
-    time_assembly = toc(time_assembly);
+    time_assemble = toc(time_assemble);
     
     time_decompose = tic;
     K{1} = decomposition(K{1});
@@ -163,7 +163,7 @@ for k = nsmin:nsmax
     end
     
     mfile.ctime_solve(1,k) = toc(time_solve);
-    mfile.ctime_assembly(1,k) = time_assembly;
+    mfile.ctime_assemble(1,k) = time_assemble;
     mfile.ctime_aaa(1,k) = time_decompose;
     mfile.ctime_basis(1,k) = toc(time_basis);
     

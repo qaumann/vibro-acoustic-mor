@@ -78,9 +78,10 @@ fprintf('Compute process PID=%d running on node %s with %d threads.\n',...
 
 fprintf(1, 'Load sytem data.\n');
 fprintf(1, '----------------\n');
-ctime = tic;
+ctime_all = tic;
 
 sys = load_model(bench);
+result = struct();
 
 fprintf(1, '\n');
 %%
@@ -145,6 +146,7 @@ if strcmpi(method, 'strint_avg') || ...
 
             if strcmpi(method, 'minrel')
                 % Compute dominant subspaces.
+                time_minrel_subspaces = tic;
 
                 lngthA = length(sys.A) - sum(cellfun(@isempty, sys.A));
                 sizeV  = size(V, 2);
@@ -184,6 +186,8 @@ if strcmpi(method, 'strint_avg') || ...
                         Vtmp = Wtmp;
                     end
                 end
+                
+                time_minrel_subspaces = toc(time_minrel_subspaces);
             end
         elseif strcmpi(method, 'strint_linf')
             if strcmpi(proj_method, 'tsimag') ...
@@ -223,10 +227,11 @@ fprintf(1, 'Compute ROM.\n');
 fprintf(1, '------------\n');
 for r=rs
     fprintf(1, 'r = %d ... ', r);
-    ctime = tic;
+    time_step = tic;
     
+    time_mor = tic;
     if strcmp(method, 'strint_avg')
-        [Ar, br, cr] = strint_avg(sys, V, W, r, proj_method);
+        [Ar, br, cr, result.ctime] = strint_avg(sys, V, W, r, proj_method);
     elseif strcmp(method, 'strint_equi')
         if contains(proj_method, 'imag')
             ns = r;
@@ -237,31 +242,28 @@ for r=rs
             end
             ns = r/2;
         end
-        [Ar, br, cr, w] = strint_equi(sys, wmin, wmax, w_pre, ns, proj_method);
+        [Ar, br, cr, w, result.ctime] = strint_equi(sys, wmin, wmax, w_pre, ns, proj_method);
     elseif strcmp(method, 'strint_linf')
-        [Ar, br, cr, w] = strint_linf(sys, w, V, W, tf, r, proj_method);
+        [Ar, br, cr, w, result.ctime] = strint_linf(sys, w, V, W, tf, r, proj_method);
     elseif strcmp(method, 'minrel')
-        [Ar, br, cr] = minrel(sys, V, W, Vtmp, Wtmp, r, proj_method);
+        [Ar, br, cr, result.ctime] = minrel(sys, V, W, Vtmp, Wtmp, r, proj_method);
+        result.ctime.minrel_dominant_subspaces = time_minrel_subspaces;
     elseif strcmp(method, 'sobt')
-        [Ar, br, cr, w] = sobt(sys, r, proj_method, bench);
+        [Ar, br, cr, w, result.ctime] = sobt(sys, r, proj_method, bench);
     end
-
-%     fprintf(1, '\n');
-
+    result.ctime.mor = toc(time_mor);
 
     %%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % COMPUTE RES.                                                        %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%      fprintf(1, 'Compute RES.\n');
-%      fprintf(1, '------------\n');
-
     if startsWith(sys.name, 'plate_48')
         n_nodes = full(sum(sum(sys.c)));
     end
     s   = sys.s;
 
+    time_evaluate_rom = tic;
     res = zeros(1, length(s));
     for k=1:length(s)
         Atmp = sys.fA{1}(s(k)) * Ar{1};
@@ -282,8 +284,7 @@ for r=rs
             res(k) = cr * (Atmp \ btmp);
         end
     end
-
-%     fprintf(1, '\n');
+    result.ctime.evaluate_rom = toc(time_evaluate_rom);
 
 
     %%
@@ -291,19 +292,14 @@ for r=rs
     % SAVE RESULTS.                                                       %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%      fprintf(1, 'Save results.\n');
-%      fprintf(1, '-------------\n');
-
     if exist('results', 'dir') ~= 7
         mkdir('results')
     end
-
-    % if startsWith(sys.name, 'plate_48')
-    result = struct('ns', ns, 'r', r, 'w', w, 'res', res);
-    % else
-    %     result = struct('ns', ns, 'r', r, 'w', w, ...
-    %         'Ar', {Ar}, 'br', br, 'cr', cr, 'res', res);
-    % end
+    
+    result.ns = ns;
+    result.r = r;
+    result.w = w;
+    result.res = res;
     
     if isempty(pre_method)
         fname = ['results/' bench '_' method '_' proj_method '.mat'];
@@ -312,11 +308,9 @@ for r=rs
     end
 
     mfile = matfile(fname, 'Writable', true);
-
-
     mfile.result_data(1, r) = result;
     
-    fprintf(1, 'Completed in %.3f s at %s\n', toc(ctime), datetime('now'));
+    fprintf(1, 'Completed in %.3f s at %s\n', toc(time_step), datetime('now'));
 
 end
 
@@ -328,7 +322,7 @@ fprintf(1, '\n');
 % FINISHED SCRIPT.                                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-fprintf(1, '\tCompleted in %.3fs at %s\n\n', toc(ctime), datetime('now'));
+fprintf(1, '\tCompleted in %.3fs at %s\n\n', toc(ctime_all), datetime('now'));
 fprintf(1, 'FINISHED SCRIPT.\n');
 fprintf(1, '================\n');
 fprintf(1, '\n');

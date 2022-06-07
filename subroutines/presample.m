@@ -96,12 +96,11 @@ end
 fprintf(1, 'Start presampling %s\n\n', sys.name);
 
 %% Compute bases
-% time_assembly = zeros(
 time_all_bases = tic;
 for k = nsmin:nsmax
     fprintf(1, 'Presampling step %3d / %3d ... ', k, nsmax);
     time_basis = tic;
-    time_assembly = tic;
+    time_assemble = tic;
     
     s = w(k);
     
@@ -133,7 +132,7 @@ for k = nsmin:nsmax
         end
     end
     
-    time_assembly = toc(time_assembly);
+    time_assemble = toc(time_assemble);
     
     % directly save V and W to file (tf not possible, because a 1x1xK array
     % is converted to a 1xK array and the indexing throws an error)
@@ -152,7 +151,7 @@ for k = nsmin:nsmax
         tf(:, :, k)     = y' * btmp;
     end
     mfile.ctime_solve(1,k) = toc(time_solve);
-    mfile.ctime_assembly(1,k) = time_assembly;
+    mfile.ctime_assemble(1,k) = time_assemble;
     mfile.ctime_basis(1,k) = toc(time_basis);
     
     fprintf(1, 'Completed in %.3f s at %s\n', mfile.ctime_basis(1,k), datetime('now'));

@@ -1,7 +1,30 @@
-function [Ar, br, cr, w] = sobt(sys, r, method, bench)
+function [Ar, br, cr, w, ctime] = sobt(sys, r, method, bench)
 %SOBT Compute second-order balanced truncation.
 %
-% method: balancing formulas 1--8, osinput, osoutput
+% SYNTAX:
+%   [Ar, br, cr, ctime] = STRINT_EQUI(sys, r, method, bench)
+%
+% DESCRIPTION:
+%
+% INPUT:
+%   sys - system data (see load_model.m)
+%   r - size of the reduced model
+%   method - type of projection space for interpolation
+%              'p'        - position balancing
+%              'pm'       - position balancing (diagonalized M)
+%              'pv'       - position-velocity balancing
+%              'vp'       - velocity-position balancing
+%              'vpm'      - velocity-position balancing (diag. M)
+%              'v'        - velocity balancing
+%              'fv'       - free velocity balancing
+%              'so'       - second-order balancing
+%              'osinput'  - one-sided projection imag. input parts
+%              'osoutput' - one-sided projection imag. output parts
+%
+% OUTPUT:
+%   Ar, br, cr - reduced order model
+%   w - expansion frequencies
+%   ctime - struct with computation times
 
 %
 % This file is part of the Code, Data and Results for Numerical Experiments
@@ -26,6 +49,8 @@ if length(sys.A) == 2
     sys.fA{3} = sys.fA{2};
     sys.fA{2} = sys.fA{1};
 end
+
+ctime = struct();
 
 % Compute controllability Gramian.
 fprintf(1, 'Compute controllability Gramian.\n');
@@ -56,12 +81,14 @@ if not(strcmpi(method, 'osoutput'))
         eqn.type  = 'N';
         eqn.haveE = 1;
         
+        ctime_gram_c = tic;
         opts.shifts.p = mess_para(eqn, opts, oper);
         out           = mess_lradi(eqn, opts, oper);
         ZC            = out.Z;
+        ctime_gram_c = toc(ctime_gram_c);
         
         if exist('presampling', 'dir') ~= 7; mkdir('presampling');  end
-        save(['presampling/' bench '_gram_c.mat'], 'ZC', '-v7.3');
+        save(['presampling/' bench '_gram_c.mat'], 'ZC', 'ctime_gram_c', '-v7.3');
     end
 end
 
@@ -94,12 +121,14 @@ if not(strcmpi(method, 'osinput'))
         eqn.type  = 'T';
         eqn.haveE = 1;
         
+        ctime_gram_o = tic;
         opts.shifts.p = mess_para(eqn, opts, oper);
         out           = mess_lradi(eqn, opts, oper);
         ZO            = out.Z;
+        ctime_gram_o = toc(ctime_gram_o);
         
         if exist('presampling', 'dir') ~= 7; mkdir('presampling');  end
-        save(['presampling/' bench '_gram_o.mat'], 'ZO', '-v7.3');
+        save(['presampling/' bench '_gram_o.mat'], 'ZO', 'ctime_gram_o', '-v7.3');
     end
 end
 
@@ -107,21 +136,29 @@ end
 fprintf(1, 'Compute ROM.\n');
 w = [];
 if strcmpi(method, 'osinput')
+    time_qr = tic;
     [V, ~, ~] = qr(ZC, 0);
     [V, ~, ~] = qr(V(1:n, 1:r), 0);
     W         = V;
+    ctime.qr = toc(time_qr);
     
+    time_projection = tic;
     Ar = cellfun(@(c) W' * (c * V), sys.A, 'UniformOutput', 0);
     br = W' * sys.b;
     cr = sys.c * V;
+    ctime.projection = toc(time_projection);
 elseif strcmpi(method, 'osoutput')
+    time_qr = tic;
     [W, ~, ~] = qr(ZO, 0);
     [W, ~, ~] = qr(W(1:n, 1:r), 0);
     V         = W;
+    ctime.qr = toc(time_qr);
     
+    time_projection = tic;
     Ar = cellfun(@(c) W' * (c * V), sys.A, 'UniformOutput', 0);
     br = W' * sys.b;
     cr = sys.c * V;
+    ctime.projection = toc(time_projection);
 else
     tmp  = struct('M', sys.A{3}, 'E', sys.A{2}, 'K', sys.A{1}, ...
         'Bu', sys.b, 'Cp', sys.c);
@@ -130,7 +167,9 @@ else
         'Method'          , 'sr', ...
         'OrderComputation', 'order', ...
         'Order'           , r);
+    time_bt = tic;
     tmp  = btred_so(tmp, speye(n), ZC, ZO, opts);
+    ctime.bt = toc(time_bt);
     
     Ar = {tmp.K, tmp.E, tmp.M};
     br = tmp.Bu;
