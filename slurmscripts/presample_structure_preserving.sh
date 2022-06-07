@@ -15,7 +15,7 @@ echo "presample_structure_preserving(load_model('$bench', true), $wmin, $wmax, $
 echo
 
 # Run MATLAB
-matlab -nodisplay -r "install;\
+matlab -nojvm -nosplash -batch "install;\
 sys=load_model('$bench', true);\
 presample_structure_preserving(sys, $wmin, $wmax, $ns, 1, $ns, $wpre, '$side'); \
 quit();"  < /dev/null

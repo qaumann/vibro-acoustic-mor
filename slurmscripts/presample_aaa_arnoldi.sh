@@ -15,7 +15,7 @@ echo "presample_aaa_arnoldi(load_model('$bench', true), $wmin, $wmax, $ns, 1, $n
 echo
 
 # Run MATLAB
-matlab -nodisplay -r "install;\
+matlab -nojvm -nosplash -batch "install;\
 sys=load_model('$bench', true);\
 presample_aaa_arnoldi(sys, $r, $wmin, $wmax, $ns, 1, $ns, $wpre, '$side'); \
 quit();"  < /dev/null
