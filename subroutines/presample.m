@@ -153,8 +153,9 @@ for k = nsmin:nsmax
     end
     mfile.ctime_solve(1,k) = toc(time_solve);
     mfile.ctime_assembly(1,k) = time_assembly;
+    mfile.ctime_basis(1,k) = toc(time_basis);
     
-    fprintf(1, 'Completed in %.3f s at %s\n', toc(time_basis), datetime('now'));
+    fprintf(1, 'Completed in %.3f s at %s\n', mfile.ctime_basis(1,k), datetime('now'));
 end
 ctime = toc(time_all_bases);
 

@@ -63,7 +63,7 @@ r = size(sys.symfuns.dsfuns,1);
 K = cell(1,r);
 
 % check folder
-if exist('results', 'dir') ~= 7; mkdir('results');  end
+if exist('presampling', 'dir') ~= 7; mkdir('presampling');  end
 
 if nsmin == 1 && nsmax == ns
     fname = ['presampling/presampling_strprs_' sys.name '.mat'];
@@ -80,6 +80,7 @@ time_all_bases = tic;
 for k = nsmin:nsmax
     fprintf(1, 'Presampling step %3d / %3d ... ', k, nsmax);
     time_basis = tic;
+    time_assembly = tic;
     
     s = w(k);
     
@@ -98,13 +99,20 @@ for k = nsmin:nsmax
         end
         
     end
+    
+    time_assembly = toc(time_assembly);
+    
+    time_decompose = tic;
     K{1} = decomposition(K{1});
+    time_decompose = toc(time_decompose);
     
     % directly save V and W to file (tf not possible, because a 1x1xK array
     % is converted to a 1xK array and the indexing throws an error)
     mfile = matfile(fname, 'Writable', true);
     
     % Compute bases and transfer functions
+    time_solve = tic;
+    
     % Accumulate inputs.
     if strcmpi(side, 'ts') || strcmpi(side, 'input')
         x = zeros(n,r);
@@ -154,7 +162,12 @@ for k = nsmin:nsmax
         mfile.W(1:n, idx) = y;
     end
     
-    fprintf(1, 'Completed in %.3f s at %s\n', toc(time_basis), datetime('now'));
+    mfile.ctime_solve(1,k) = toc(time_solve);
+    mfile.ctime_assembly(1,k) = time_assembly;
+    mfile.ctime_aaa(1,k) = time_decompose;
+    mfile.ctime_basis(1,k) = toc(time_basis);
+    
+    fprintf(1, 'Completed in %.3f s at %s\n', mfile.ctime_basis(1,k), datetime('now'));
 end
 ctime = toc(time_all_bases);
 
