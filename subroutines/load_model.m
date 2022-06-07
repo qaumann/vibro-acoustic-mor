@@ -190,9 +190,6 @@ switch type
             model.symfuns.dsfuns{1,2}(s) = s^2;
             model.symfuns.dsfuns{2,2}(s) = 2*s;
             model.symfuns.dsfuns{3,2}(s) = 1*(s/s);
-            
-            model.symfuns.dsfunb = cell(1,1);
-            model.symfuns.dsfunb{1}(s) = s/s;
         end
         
     case 'proportional'
