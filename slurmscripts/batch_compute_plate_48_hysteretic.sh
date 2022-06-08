@@ -34,14 +34,14 @@ for pm in 'osimaginput' 'osrealinput'; do
             --export=ALL,method=${method},bench=${bench},wmin=$wmin,wmax=$wmax,ns=$ns,rs=$rs,pm=$pm,wpre=[] \
             compute.sh
 
-		sbatch -J ph_${method}_${pm} \
+		sbatch -J ph_${method}_${pm}_aaa \
             --mail-user=${email} \
             --partition=medium \
             --time=0-24:00:00 \
             --export=ALL,method=${method},premethod=aaaa,bench=${bench},wmin=$wmin,wmax=$wmax,ns=$ns_aaaa,rs=$rs,pm=$pm,wpre=[] \
             compute.sh
 
-		sbatch -J ph_${method}_${pm} \
+		sbatch -J ph_${method}_${pm}_strprs \
             --mail-user=${email} \
             --partition=medium \
             --time=0-24:00:00 \
