@@ -25,8 +25,8 @@ side='ts'
 
 sbatch -J pre_poro \
     --mail-user=${email} \
-    --partition=medium \
-    --time=0-24:00:00 \
+    --partition=long \
+    --time=3-00:00:00 \
     --export=ALL,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns,wpre=[],side=$side \
     presample.sh
 
