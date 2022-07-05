@@ -6,3 +6,6 @@ log/*.out
 
 software/*
 !software/.keep
+
+results_data/*
+results_graphics/*
