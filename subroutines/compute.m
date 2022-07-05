@@ -1,4 +1,4 @@
-function [Ar, br, cr, s, res] = compute(bench, method, proj_method, ns, rs, wmin, wmax, pre_method, w_pre)
+function [Ar, br, cr, s, res] = compute(bench, method, proj_method, ns, rs, wmin, wmax, pre_method, w_pre, r0)
 %COMPUTE compute reduced order models using different reduction methods
 %
 % SYNTAX:
@@ -43,6 +43,7 @@ function [Ar, br, cr, s, res] = compute(bench, method, proj_method, ns, rs, wmin
 %              'aaaa'   - second order Arnoldi with arbitrary interpolation
 %                         order
 %   w_pre - predefined frequency points; may be empty
+%   r0 - Subspace order of Arnoldi presampling basis; may be empty
 
 %
 % This file is part of the Code, Data and Results for Numerical Experiments
@@ -99,7 +100,12 @@ if strcmpi(method, 'strint_avg') || ...
     if isempty(pre_method)
         fname = ['presampling/presampling_' sys.name '.mat'];
     else
-        fname = ['presampling/presampling_' pre_method '_' sys.name '.mat'];
+        if exist('r0','var') == 1
+            fname = ['presampling/presampling_' pre_method '_' sys.name ...
+                '_r_' num2str(r0) '.mat'];
+        else
+            fname = ['presampling/presampling_' pre_method '_' sys.name '.mat'];
+        end
     end
     
     if exist(fname, 'file') == 2
@@ -304,7 +310,12 @@ for r=rs
     if isempty(pre_method)
         fname = ['results/' bench '_' method '_' proj_method '.mat'];
     else
-        fname = ['results/' bench '_' method '_' pre_method '_' proj_method '.mat'];
+        if exist('r0','var') == 1
+            fname = ['results/' bench '_' method '_' pre_method '_' ...
+                proj_method '_r_' num2str(r0) '.mat'];
+        else
+            fname = ['results/' bench '_' method '_' pre_method '_' proj_method '.mat'];
+        end
     end
 
     mfile = matfile(fname, 'Writable', true);

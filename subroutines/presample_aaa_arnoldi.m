@@ -45,6 +45,10 @@ if nargin == 7
 end
 if nargin ~= 9
     side = 'ts';
+else
+    if ~(strcmp(side,'ts') || strcmp(side,'input') || strcmp(side,'output'))
+        error('unknown projection side. Can be ts, input, or output')
+    end
 end
 
 fprintf('Presampling process PID=%d running on node %s with %d threads.\n',...
@@ -61,11 +65,12 @@ n = size(sys.A{1},1);
 if exist('presampling', 'dir') ~= 7; mkdir('presampling');  end
 
 if nsmin == 1 && nsmax == ns
-    fname = ['presampling/presampling_aaaa_' sys.name '.mat'];
+    fname = ['presampling/presampling_aaaa_' sys.name];
 else
     fname = ['presampling/presampling_aaaa_' sys.name '_' num2str(nsmin) ...
-        '_' num2str(nsmax) '.mat'];
+        '_' num2str(nsmax)];
 end
+fname = [fname '_r_' num2str(r) '.mat'];
 
 fprintf(1, 'Start presampling %s\n\n', sys.name);
 
