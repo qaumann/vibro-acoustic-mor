@@ -70,11 +70,13 @@ for bb = 1:length(benchs)
         name = erase(files(ii).name, [bench + "_", ".mat"]);
         if startsWith(name, 'gram'); continue; end
         if startsWith(name, 'presampling'); continue; end
-        if ~(contains(name,'equi') || contains(name,'aaaa') || ...
+        if ~(contains(name, 'equi') || contains(name, 'aaaa') || ...
                 contains(name,'strprs') || contains(name,'sobt'))
             tmp = strsplit(name,'_');
             name = [sprintf('%s_',tmp{1:end-1}),'std_',tmp{end}];
         end
+        name = strrep(name,'aaaa','soa');
+        name = strrep(name,'strprs','sp');
         if contains(name,'osinput')
             name = strrep(name,'osinput','osimaginput');
         end
@@ -86,7 +88,6 @@ for bb = 1:length(benchs)
         results(ind).r = 1:length(result_data);
         
         % compute relative errors per order
-        
         for r = tmp_r
             if xor(all(imag(sys.res) == 0), all(imag(result_data(r).res) == 0))
                 relerr = abs(abs(sys.res) - ...
@@ -96,6 +97,7 @@ for bb = 1:length(benchs)
                 relerr = abs(sys.res - result_data(r).res(1:length(sys.res))) ...
                     ./ abs(sys.res);
             end
+            results(ind).res{r} = abs(result_data(r).res(1:length(sys.res)));
             results(ind).relerr{r} = relerr;
         end
         
@@ -165,13 +167,13 @@ for bb = 1:length(benchs)
         results(ind).ctime_mor = result_data(end).ctime.mor;
         
         % presampling computation time
-        if contains(name,'aaaa')
+        if contains(name,'_soa_')
             tmp = load([dir_presampling filesep 'presampling_aaaa_' bench '.mat'],'ctime');
             results(ind).ctime_presampling = tmp.ctime;
-        elseif contains(name,'strprs')
+        elseif contains(name,'_sp_')
             tmp = load([dir_presampling filesep 'presampling_strprs_' bench '.mat'],'ctime');
             results(ind).ctime_presampling = tmp.ctime;
-        elseif contains(name,'std')
+        elseif contains(name,'_std_')
             tmp = load([dir_presampling filesep 'presampling_' bench '.mat'],'ctime');
             results(ind).ctime_presampling = tmp.ctime;
         elseif contains(name,'sobt_osimaginput')
