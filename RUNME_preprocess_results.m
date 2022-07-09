@@ -103,7 +103,7 @@ for bb = 1:length(benchs)
         
         
         results(ind).maxrelerr = zeros(1,length(result_data));
-        results(ind).hinfrelerr = zeros(1,length(result_data));
+        results(ind).linfrelerr = zeros(1,length(result_data));
         
         % compute error norms. If full order result is abs, compute abs for ROM
         for jj=tmp_r
@@ -115,12 +115,12 @@ for bb = 1:length(benchs)
             if xor(all(imag(sys.res) == 0), all(imag(this_result) == 0))
                 results(ind).maxrelerr(jj)  = max(abs(abs(sys.res) - abs(this_result)) ...
                     ./ abs(sys.res));
-                results(ind).hinfrelerr(jj) = max(abs(abs(sys.res) - abs(this_result))) ...
+                results(ind).linfrelerr(jj) = max(abs(abs(sys.res) - abs(this_result))) ...
                     ./ max(abs(sys.res));
             else
                 results(ind).maxrelerr(jj)  = max(abs(sys.res - this_result) ...
                     ./ abs(sys.res));
-                results(ind).hinfrelerr(jj) = max(abs(sys.res - this_result)) ...
+                results(ind).linfrelerr(jj) = max(abs(sys.res - this_result)) ...
                     ./ max(abs(sys.res));
             end
         end
@@ -128,34 +128,34 @@ for bb = 1:length(benchs)
         % fill error norms for not computed reduced orders
         if length(tmp_r) ~= length(results(ind).r)
             prev_maxrelerr = 0;
-            prev_hinfrelerr = 0;
+            prev_linfrelerr = 0;
             for jj=results(ind).r
                 if isempty(result_data(jj).res)
                     results(ind).maxrelerr(jj) = prev_maxrelerr;
-                    results(ind).hinfrelerr(jj) = prev_hinfrelerr;
+                    results(ind).linfrelerr(jj) = prev_linfrelerr;
                 else
                     prev_maxrelerr = results(ind).maxrelerr(jj);
-                    prev_hinfrelerr = results(ind).hinfrelerr(jj);
+                    prev_linfrelerr = results(ind).linfrelerr(jj);
                 end
             end
         end
         
         % fill missing errors with 1
         results(ind).maxrelerr(results(ind).maxrelerr == 0) = 1;
-        results(ind).hinfrelerr(results(ind).hinfrelerr == 0) = 1;
+        results(ind).linfrelerr(results(ind).linfrelerr == 0) = 1;
         
         % truncate results for orders > morscore_max (from strprs and aaaa presampling)
         if length(results(ind).r) > morscore_max
             results(ind).r(morscore_max+1:end) = [];
             results(ind).maxrelerr(morscore_max+1:end) = [];
-            results(ind).hinfrelerr(morscore_max+1:end) = [];
+            results(ind).linfrelerr(morscore_max+1:end) = [];
         end
         
         % compute MOR score
-        tmp_hinfrelerr = [1 results(ind).hinfrelerr];
-        tmp_hinfrelerr(tmp_hinfrelerr > 1) = 1;
-        results(ind).morscore_hinf = trapz((0:morscore_max) / morscore_max, ...
-            log10(tmp_hinfrelerr) / floor(log10(morscore_eps)));
+        tmp_linfrelerr = [1 results(ind).linfrelerr];
+        tmp_linfrelerr(tmp_linfrelerr > 1) = 1;
+        results(ind).morscore_linf = trapz((0:morscore_max) / morscore_max, ...
+            log10(tmp_linfrelerr) / floor(log10(morscore_eps)));
         
         
         tmp_maxrelerr = [1 results(ind).maxrelerr];
@@ -195,7 +195,7 @@ for bb = 1:length(benchs)
     if any(strcmp({results.name},'sobt_osimaginput'))
         results(end+1).name = 'sobt_osrealinput';  %#ok<SAGROW>
         results(end).ctime_mor = 0;
-        results(end).morscore_hinf = 0;
+        results(end).morscore_linf = 0;
         results(end).morscore_maxrel = 0;
     end
     

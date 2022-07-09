@@ -29,7 +29,7 @@ for ii = 1:length(proj_methods)
     ind = contains({results.name}, proj_methods{ii});
     this_results = results(ind);
     
-    morscores{ii} = [this_results.morscore_hinf]'; %#ok<SAGROW>
+    morscores{ii} = [this_results.morscore_linf]'; %#ok<SAGROW>
 end
 
 bar_names = {results.name};
@@ -62,7 +62,7 @@ for ii=1:length(methods)
     ind = contains({results.name}, proj_methods) & contains({results.name}, methods{ii});
     this_results = results(ind);
     
-    errors{ii} = [this_results.hinfrelerr]'; %#ok<SAGROW>
+    errors{ii} = [this_results.linfrelerr]'; %#ok<SAGROW>
 end
 
 figure('name','Manuscript Figure 3')
@@ -82,7 +82,7 @@ for ii = 1:length(proj_methods)
     ind = contains({results.name}, proj_methods{ii});
     this_results = results(ind);
     
-    morscores{ii} = [this_results.morscore_hinf]'; %#ok<SAGROW>
+    morscores{ii} = [this_results.morscore_linf]'; %#ok<SAGROW>
 end
 
 bar_names = {results.name};
@@ -116,7 +116,7 @@ for ii=1:length(methods)
     ind = contains({results.name}, proj_methods) & contains({results.name}, methods{ii});
     this_results = results(ind);
     
-    errors{ii} = [this_results.hinfrelerr]'; %#ok<SAGROW>
+    errors{ii} = [this_results.linfrelerr]'; %#ok<SAGROW>
 end
 
 figure('name','Manuscript Figure 5')
@@ -155,7 +155,6 @@ freq = abs(sys.s)/2/pi;
 res = abs(sys.res);
 load([dir_raw filesep 'data_plate_48_rayleigh_single'])
 proj_methods = {'v', 'fv', 'pv', 'vp', 'p', 'so'};
-methods = {'sobt'};
 tfs = {};
 errors = {};
 rs = 250;
@@ -181,7 +180,7 @@ qcsv([dir_data filesep 'plate_48_rayleigh_single_sobt_tferrs.csv'], ...
     'header', ['freq,res,' sprintf('%s,',proj_methods{:}) ...
     sprintf('err_%s,', proj_methods{1:end-1}) 'err_' proj_methods{end}]);
 
-%% Figure 8: MORscores plate with proportional damping (SISO)
+%% Figure x8: MORscores plate with proportional damping (SISO)
 proj_methods = {'tsimag', 'tsreal', 'osimaginput', 'osrealinput', ...
     'osimagoutput', 'osrealoutput'};
 
@@ -190,7 +189,7 @@ for ii = 1:length(proj_methods)
     ind = contains({results.name}, proj_methods{ii});
     this_results = results(ind);
     
-    morscores{ii} = [this_results.morscore_hinf]'; %#ok<SAGROW>
+    morscores{ii} = [this_results.morscore_linf]'; %#ok<SAGROW>
 end
 
 bar_names = {results.name};
@@ -211,7 +210,7 @@ bar_cats = reordercats(bar_cats, {'strint equi', 'strint avg std', ...
     'strint linf soa', 'strint linf sp', 'minrel std', ...
     'minrel soa', 'minrel sp'});
 
-figure('name','Manuscript Figure 8')
+figure('name','Manuscript Figure x8')
 bar(bar_cats, cell2mat(morscores))
 legend(proj_methods)
 ylim([0 0.4])
@@ -219,6 +218,107 @@ ylim([0 0.4])
 mydat = [{typeset_names(bar_names)'} morscores(:)'];
 qcsv([dir_data filesep 'plate_48_rayleigh_single_morscores.csv'], mydat, ...
     'header', ['method' sprintf(',%s',proj_methods{:})]);
+
+%% Figure x10: MORscores transmission
+load([dir_raw filesep 'data_transmission'])
+proj_methods = {'tsimag', 'tsreal', 'osimaginput', 'osrealinput', ...
+    'osimagoutput', 'osrealoutput'};
+
+morscores = {};
+for ii = 1:length(proj_methods)
+    ind = contains({results.name}, proj_methods{ii});
+    this_results = results(ind);
+    
+    morscores{ii} = [this_results.morscore_linf]'; %#ok<SAGROW>
+end
+
+bar_names = {results.name};
+for ii = 1:length(proj_methods)
+    bar_names = strrep(bar_names, ['_' proj_methods{ii}],'');
+end
+bar_names = unique(strrep(bar_names, '_', ' '));
+
+bar_cats = categorical(unique(bar_names));
+bar_cats = reordercats(bar_cats, {'strint equi', 'strint avg std', ...
+    'strint avg soa', 'strint avg sp', 'strint linf std', ...
+    'strint linf soa', 'strint linf sp', 'minrel std', ...
+    'minrel soa', 'minrel sp'});
+
+figure('name','Manuscript Figure x10')
+bar(bar_cats, cell2mat(morscores))
+legend(proj_methods)
+ylim([0 0.6])
+
+mydat = [{typeset_names(bar_names)'} morscores(:)'];
+qcsv([dir_data filesep 'transmission_morscores.csv'], mydat, ...
+    'header', ['method' sprintf(',%s',proj_methods{:})]);
+
+%% Figure x11: Plate with hysteretic damping: Relative L_inf errors
+proj_methods = {'tsimag', 'tsreal', 'osimaginput', 'osrealinput', ...
+    'osimagoutput', 'osrealoutput'};
+methods = {'strint_equi'};
+errors = {};
+
+for ii=1:length(proj_methods)
+    ind = contains({results.name}, methods) & contains({results.name}, proj_methods{ii});
+    this_results = results(ind);
+    
+    errors{ii} = [this_results.linfrelerr]'; %#ok<SAGROW>
+end
+
+figure('name','Manuscript Figure x11')
+semilogy(this_results(1).r, cell2mat(errors))
+legend(proj_methods)
+
+qcsv([dir_data filesep 'transmission_errs.csv'], ...
+    [this_results(1).r' cell2mat(errors)], ...
+    'header', ['r,' sprintf('%s,',proj_methods{1:end-1}) proj_methods{end}]);
+
+%% Figure x13: MORscores radiation
+load([dir_raw filesep 'data_radiation'])
+proj_methods = {'tsimag', 'tsreal', 'osimaginput', 'osrealinput', ...
+    'osimagoutput', 'osrealoutput'};
+
+morscores = {};
+for ii = 1:length(proj_methods)
+    ind = contains({results.name}, proj_methods{ii});
+    this_results = results(ind);
+    
+    morscores{ii} = [this_results.morscore_linf]'; %#ok<SAGROW>
+end
+
+bar_names = {results.name};
+for ii = 1:length(proj_methods)
+    bar_names = strrep(bar_names, ['_' proj_methods{ii}],'');
+end
+bar_names = unique(strrep(bar_names, '_', ' '));
+
+bar_cats = categorical(unique(bar_names));
+bar_cats = reordercats(bar_cats, {'strint equi', 'strint avg std', ...
+    'strint avg soa', 'strint avg sp', 'strint linf std', ...
+    'strint linf soa', 'strint linf sp', 'minrel std', ...
+    'minrel soa', 'minrel sp'});
+
+figure('name','Manuscript Figure x13')
+bar(bar_cats, cell2mat(morscores))
+legend(proj_methods)
+ylim([0 0.4])
+
+mydat = [{typeset_names(bar_names)'} morscores(:)'];
+qcsv([dir_data filesep 'radiation_morscores.csv'], mydat, ...
+    'header', ['method' sprintf(',%s',proj_methods{:})]);
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% Helper function
 function this_names = typeset_names(this_names)
