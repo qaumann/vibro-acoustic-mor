@@ -164,7 +164,12 @@ for bb = 1:length(benchs)
             log10(tmp_maxrelerr) / floor(log10(morscore_eps)));
         
         % MOR computation time
-        results(ind).ctime_mor = result_data(end).ctime.mor;
+        if contains(name,'minrel')
+            results(ind).ctime_mor = result_data(end).ctime.mor + ...
+                result_data(end).ctime.minrel_dominant_subspaces;
+        else
+            results(ind).ctime_mor = result_data(end).ctime.mor;
+        end
         
         % presampling computation time
         if contains(name,'_soa_')
