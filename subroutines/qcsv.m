@@ -32,6 +32,8 @@ if isnumeric(m)
     else
         dlmwrite(fname,m,'delimiter',delim,'precision',prec);  
     end
+elseif istable(m)
+    writetable(m, fname, 'delimiter', delim);
 else
     if head
         if length(strsplit(head,delim)) ~= size(m,2)
