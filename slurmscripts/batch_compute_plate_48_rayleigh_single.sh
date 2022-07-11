@@ -27,21 +27,21 @@ w_pre_equi="2*pi*[44:48]"
 
 for pm in 'tsimag' 'tsreal' 'osimaginput' 'osimagoutput' 'osrealinput' 'osrealoutput'; do
 	for method in 'strint_avg' 'minrel'; do
-		sbatch -J pr_${method}_${pm} \
+		sbatch -J prs_${method}_${pm} \
             --mail-user=${email} \
             --partition=medium \
             --time=0-24:00:00 \
             --export=ALL,method=$method,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns,rs=$rs,pm=$pm,wpre=[] \
             compute.sh
 
-		sbatch -J pr_${method}_${pm}_aaa \
+		sbatch -J prs_${method}_${pm}_aaa \
             --mail-user=${email} \
             --partition=medium \
             --time=0-24:00:00 \
             --export=ALL,method=$method,premethod=aaaa,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns_aaaa,rs=$rs,pm=$pm,wpre=[] \
             compute.sh
 
-		sbatch -J pr_${method}_${pm}_strprs \
+		sbatch -J prs_${method}_${pm}_strprs \
             --mail-user=${email} \
             --partition=medium \
             --time=0-24:00:00 \
@@ -52,21 +52,21 @@ done
 
 method='strint_linf'
 for pm in 'tsimag' 'tsreal' 'osimaginput' 'osimagoutput' 'osrealinput' 'osrealoutput'; do
-    sbatch -J pr_${method}_${pm} \
+    sbatch -J prs_${method}_${pm} \
         --mail-user=${email} \
         --partition=long \
         --time=3-00:00:00 \
         --export=ALL,method=$method,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns,rs=$rs,pm=$pm,wpre=[] \
         compute.sh
 
-    sbatch -J pr_${method}_${pm}_aaa \
+    sbatch -J prs_${method}_${pm}_aaa \
         --mail-user=${email} \
         --partition=long \
         --time=3-00:00:00 \
         --export=ALL,method=$method,premethod=aaaa,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns_aaaa,rs=$rs,pm=$pm,wpre=[] \
         compute.sh
 
-    sbatch -J pr_${method}_${pm}_strprs \
+    sbatch -J prs_${method}_${pm}_strprs \
         --mail-user=${email} \
         --partition=long \
         --time=3-00:00:00 \

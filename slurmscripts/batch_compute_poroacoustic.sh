@@ -24,21 +24,21 @@ rs=1:100
 
 for pm in 'tsimag' 'tsreal' 'osimaginput' 'osimagoutput' 'osrealinput' 'osrealoutput'; do
 	for method in 'strint_avg' 'strint_linf' 'minrel'; do
-		sbatch -J rad_${method}_${pm} \
+		sbatch -J poro_${method}_${pm} \
             --mail-user=${email} \
             --partition=long \
             --time=3-00:00:00 \
             --export=ALL,method=$method,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns,rs=$rs,pm=$pm,wpre=[] \
             compute.sh
 
-		sbatch -J rad_${method}_${pm}_aaa \
+		sbatch -J poro_${method}_${pm}_aaa \
             --mail-user=${email} \
             --partition=long \
             --time=3-00:00:00 \
             --export=ALL,method=$method,premethod=aaaa,bench=$bench,wmin=$wmin,wmax=$wmax,ns=$ns_aaaa,rs=$rs,pm=$pm,wpre=[] \
             compute.sh
 
-		sbatch -J rad_${method}_${pm}_strprs \
+		sbatch -J poro_${method}_${pm}_strprs \
             --mail-user=${email} \
             --partition=long \
             --time=3-00:00:00 \
@@ -47,7 +47,7 @@ for pm in 'tsimag' 'tsreal' 'osimaginput' 'osimagoutput' 'osrealinput' 'osrealou
 	done
 
 	method='strint_equi'
-	sbatch -J rad_${method}_${pm} \
+	sbatch -J poro_${method}_${pm} \
             --mail-user=${email} \
             --partition=long \
             --time=7-00:00:00 \
