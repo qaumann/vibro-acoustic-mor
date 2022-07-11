@@ -2,9 +2,9 @@ name: Code, Data and Results for Numerical Experiments in "Structured model
  order reduction for vibro-acoustic problems using interpolation and
  balancing methods"
 shortname:
-version: 1.0
-release-date: 2022-01-11
-id: 10.5281/zenodo.5836047
+version: 1.1
+release-date: 2022-07-25
+id: 10.5281/zenodo.6806016
 id-type: doi
 authors: Quirin Aumann, Steffen W. R. Werner
 orcids: 0000-0001-7942-5703, 0000-0003-1667-4862
@@ -15,7 +15,7 @@ license-type: Open
 repository: private development
 repository-type: git
 languages: MATLAB
-dependencies: MATLAB (2020a), M-M.E.S.S. (2.0.1), SOLBT (3.0)
+dependencies: MATLAB (2020b), M-M.E.S.S. (2.0.1), SOLBT (3.0)
 systems: Linux
 website: https://zenodo.org/record/5836047
 keywords: Model Order Reduction, Acoustic Systems, Linear Systems,

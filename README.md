@@ -122,7 +122,7 @@ See [COPYING_DATA](COPYING_DATA) for a copy of the license.
 ### DOI
 
 The DOI for version 1.0 of this archive is
-[10.5281/zenodo.5836047](https://doi.org/10.5281/zenodo.5836047)
+[10.5281/zenodo.6806016](https://doi.org/10.5281/zenodo.6806016)
 
 
 ### Cite as
@@ -130,7 +130,7 @@ The DOI for version 1.0 of this archive is
 Q. Aumann and S. W. R. Werner. Code, data and results for numerical
 experiments in "Structured model order reduction for vibro-acoustic
 problems using interpolation and balancing methods" (version 1.0),
-January 2022. doi:10.5281/zenodo.5836047
+January 2022. doi:10.5281/zenodo.6806016
 
 
 ### BibTeX
@@ -143,5 +143,5 @@ January 2022. doi:10.5281/zenodo.5836047
                 (version 1.0)},
       month  = jan,
       year   = {2022},
-      doi    = {10.5281/zenodo.5836047}
+      doi    = {10.5281/zenodo.6806016}
     }
