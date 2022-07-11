@@ -151,6 +151,9 @@ for bb = 1:length(benchs)
             results(ind).linfrelerr(morscore_max+1:end) = [];
         end
         
+        % linfrelerr at max r
+        results(ind).linfrelerr_at_max_r = results(ind).linfrelerr(end);
+        
         % compute MOR score
         tmp_linfrelerr = [1 results(ind).linfrelerr];
         tmp_linfrelerr(tmp_linfrelerr > 1) = 1;
@@ -164,11 +167,19 @@ for bb = 1:length(benchs)
             log10(tmp_maxrelerr) / floor(log10(morscore_eps)));
         
         % MOR computation time
+        results(ind).ctime_mor = zeros(1,length(result_data));
         if contains(name,'minrel')
-            results(ind).ctime_mor = result_data(end).ctime.mor + ...
+            for jj=tmp_r
+                results(ind).ctime_mor(jj) = result_data(jj).ctime.mor + ...
+                    result_data(jj).ctime.minrel_dominant_subspaces;
+            end
+            results(ind).ctime_mor_at_max_r = result_data(end).ctime.mor + ...
                 result_data(end).ctime.minrel_dominant_subspaces;
         else
-            results(ind).ctime_mor = result_data(end).ctime.mor;
+            for jj=tmp_r
+                results(ind).ctime_mor(jj) = result_data(jj).ctime.mor;
+            end
+            results(ind).ctime_mor_at_max_r = result_data(end).ctime.mor;
         end
         
         % presampling computation time
@@ -199,7 +210,8 @@ for bb = 1:length(benchs)
     % add dummy for single-sided bt (real-valued not applicable)
     if any(strcmp({results.name},'sobt_osimaginput'))
         results(end+1).name = 'sobt_osrealinput';  %#ok<SAGROW>
-        results(end).ctime_mor = 0;
+        results(end).ctime_mor = zeros(1,length(result_data));
+        results(end).ctime_mor_at_max_r = 0;
         results(end).morscore_linf = 0;
         results(end).morscore_maxrel = 0;
     end

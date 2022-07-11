@@ -58,7 +58,7 @@ for bb = 1:length(benchs)
     for pm = proj_methods
         for o = ordering
             ind = contains({results.name}, pm{:}) & contains({results.name}, o{:});
-            ctimes(idx) = results(ind).ctime_mor;
+            ctimes(idx) = results(ind).ctime_mor_at_max_r;
             idx = idx + 1;
         end
     end
@@ -75,7 +75,7 @@ for bb = 1:length(benchs)
         idx = 1;
         for pm = proj_methods
             ind = strcmp({results.name}, ['sobt_' pm{:}]);
-            ctimes(idx) = results(ind).ctime_mor;
+            ctimes(idx) = results(ind).ctime_mor_at_max_r;
             idx = idx+1;
         end
         T = splitvars(table({'\lmorbt{}'},ctimes));

@@ -83,7 +83,7 @@ for ii = 1:length(proj_methods)
     
     this_results(contains({this_results.name}, 'equi')) = [];
     
-    ctimes{ii} = [this_results.ctime_mor]'; %#ok<SAGROW>
+    ctimes{ii} = [this_results.ctime_mor_at_max_r]'; %#ok<SAGROW>
 end
 
 bar_names = {results.name};
@@ -196,7 +196,7 @@ for ii = 1:length(proj_methods)
     this_results(contains({this_results.name}, 'equi')) = [];
     this_results(contains({this_results.name}, 'sobt')) = [];
     
-    ctimes{ii} = [this_results.ctime_mor]'; %#ok<SAGROW>
+    ctimes{ii} = [this_results.ctime_mor_at_max_r]'; %#ok<SAGROW>
 end
 
 bar_names = {results.name};
@@ -305,7 +305,7 @@ for ii = 1:length(proj_methods)
     this_results(contains({this_results.name}, 'equi')) = [];
     this_results(contains({this_results.name}, 'sobt')) = [];
     
-    ctimes{ii} = [this_results.ctime_mor]'; %#ok<SAGROW>
+    ctimes{ii} = [this_results.ctime_mor_at_max_r]'; %#ok<SAGROW>
 end
 
 bar_names = {results.name};
@@ -398,7 +398,7 @@ for ii = 1:length(proj_methods)
     
     this_results(contains({this_results.name}, 'equi')) = [];
     
-    ctimes{ii} = [this_results.ctime_mor]'; %#ok<SAGROW>
+    ctimes{ii} = [this_results.ctime_mor_at_max_r]'; %#ok<SAGROW>
 end
 
 bar_names = {results.name};
@@ -524,7 +524,7 @@ for ii = 1:length(proj_methods)
     
     this_results(contains({this_results.name}, 'equi')) = [];
     
-    ctimes{ii} = [this_results.ctime_mor]'; %#ok<SAGROW>
+    ctimes{ii} = [this_results.ctime_mor_at_max_r]'; %#ok<SAGROW>
 end
 
 bar_names = {results.name};
@@ -615,7 +615,7 @@ for ii = 1:length(proj_methods)
     
     this_results(contains({this_results.name}, 'equi')) = [];
     
-    ctimes{ii} = [this_results.ctime_mor]'; %#ok<SAGROW>
+    ctimes{ii} = [this_results.ctime_mor_at_max_r]'; %#ok<SAGROW>
 end
 
 bar_names = {results.name};
