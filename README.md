@@ -16,10 +16,11 @@ which implement the reported numerical experiments.
 
 ### Dependencies and installation
 
-The computations were originally performed in MATLAB 9.8.0.1451342 (R2020a)
-on single nodes of the Leibniz supercomputing centre's CoolMUC-2 running on
-SUSE(R) Linux Enterprise Server 15 SP1 equipped with a 28 core Intel(R)
-Haswell based CPU and 56 GB main memory available.
+The computations were originally performed in MATLAB 9.9.0.1467703 (R2020b)
+on single nodes of the MPI Magdeburg's computing cluster Mechthild running on
+CentOS Linux version 7.9.2009 equipped with two 8 core Intel(R) Xeon(R)
+Silver 4110 (Skylake) CPUs with a maximum clock rate of 3.0 GHz and 192 GB main
+memory available.
 
 Additionally, the following software packages need to be downloaded:
 
@@ -38,6 +39,9 @@ To properly set the MATLAB search path for the experiments, run the
 The archive contains the following subdirectories:
 
 * `models`: contains the benchmark models.
+* `output`: contains a file for each benchmark with the raw result data compiled
+  to one file.
+* `presampling`: contains the data resulting from presampling strategies.
 * `results`: contains all the computed results of the numerical
   experiments. Re-running the experiments will overwrite the content.
 * `slurmscripts`: contains SLURM scripts to run experiments on the
@@ -49,7 +53,7 @@ The archive contains the following subdirectories:
 * `subroutines`: contains implementations and subroutines for the model
   order reduction strategies presented in the manuscript.
 
-To test the computational setup before running the computational intense
+To test the computational setup before running the computational intensive
 experiments, the `TEST_RUNME_*` scripts can be used.
 The order in which to run these scripts is the same as for the later
 experiments, with:
@@ -67,9 +71,13 @@ README and begin with `RUNME_*`. They perform the following experiments:
   where `[bench]` stands for one of the following experiments: 
   `plate_48_hysteretic`, `plate_48_rayleigh`, `plate_48_rayleigh_single`,
   `poroacoustic`, `radiation`, `transmission`.
-* `RUNME_evaluate_results.m`: Produces plots and data used in the figures
-  in the manuscript.
-  
+* `RUNME_preprocess_results.m`: Compiles the raw result data from the folder 
+  `results` to single files per benchmark. Produces the content of the folder
+  `output`.
+* `RUNME_plot_data.m`: Produces the plots shown in the manuscript.
+* `RUNME_generate_data_tables.m`: Produces the data for the tables presented in
+  the manuscript.
+
 The scripts to run the experiments on an HPC cluster utilizing a SLURM
 queue lie in the subdirectory `slurmscripts`. They perform the following
 experiments:
@@ -121,7 +129,7 @@ See [COPYING_DATA](COPYING_DATA) for a copy of the license.
 
 ### DOI
 
-The DOI for version 1.0 of this archive is
+The DOI for version 1.1 of this archive is
 [10.5281/zenodo.6806016](https://doi.org/10.5281/zenodo.6806016)
 
 
@@ -129,7 +137,7 @@ The DOI for version 1.0 of this archive is
 
 Q. Aumann and S. W. R. Werner. Code, data and results for numerical
 experiments in "Structured model order reduction for vibro-acoustic
-problems using interpolation and balancing methods" (version 1.0),
+problems using interpolation and balancing methods" (version 1.1),
 January 2022. doi:10.5281/zenodo.6806016
 
 
@@ -140,7 +148,7 @@ January 2022. doi:10.5281/zenodo.6806016
       title  = {Code, Data and Results for Numerical Experiments in
                 ``{S}tructured model order reduction for vibro-acoustic
                 problems using interpolation and balancing methods''
-                (version 1.0)},
+                (version 1.1)},
       month  = jan,
       year   = {2022},
       doi    = {10.5281/zenodo.6806016}
