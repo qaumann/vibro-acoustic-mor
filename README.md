@@ -149,7 +149,7 @@ January 2022. doi:10.5281/zenodo.6806016
                 ``{S}tructured model order reduction for vibro-acoustic
                 problems using interpolation and balancing methods''
                 (version 1.1)},
-      month  = jan,
+      month  = aug,
       year   = {2022},
       doi    = {10.5281/zenodo.6806016}
     }
